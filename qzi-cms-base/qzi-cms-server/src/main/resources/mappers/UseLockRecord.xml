@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qzi.cms.server.mapper.UseLockRecordMapper">
+    <!-- 注册界面获取小区数据 -->
+    <select id="findAll" resultType="UseLockRecordVo" parameterType="UseLockRecordVo">
+        select re.*,ue.equipmentName  as equipmentName from use_lock_record re left join use_equipment  ue
+        on re.equipmentId = ue.id
+        <where>
+            1=1
+            <if test="model.phone != null and model.phone !=''">
+                and re.phone = #{model.phone}
+
+            </if>
+
+            <if test="model.communityId != null and model.communityId !=''">
+                and re.communityId = #{model.communityId}
+            </if>
+        </where>
+        order by re.createTime desc
+        limit #{startRow}, #{pageSize};
+    </select>
+
+    <select id="findCount" resultType="long" parameterType="UseLockRecordVo">
+        select count(1) from use_lock_record re left join use_equipment  ue
+        on re.equipmentId = ue.id
+        <where>
+            1=1
+            <if test="model.phone != null and model.phone !=''">
+                and re.phone = #{model.phone}
+
+            </if>
+
+            <if test="model.communityId != null and model.communityId !=''">
+                and re.communityId = #{model.communityId}
+            </if>
+        </where>
+    </select>
+
+
+</mapper>

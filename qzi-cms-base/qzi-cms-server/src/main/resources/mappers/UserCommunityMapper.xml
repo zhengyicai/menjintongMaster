@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qzi.cms.server.mapper.UseCommunityMapper">
+    <!-- 注册界面获取小区数据 -->
+    <select id="regfindAll" resultType="UseCommunityPo" parameterType="UseCommunityPo">
+        SELECT id,communityName,communityNo  from  use_community
+        <where>
+            1=1
+            <if test="model.provinceCode != null and model.provinceCode !=''">
+                and provinceCode = #{model.provinceCode}
+            </if>
+            <if test="model.cityCode != null and model.cityCode !=''">
+                and cityCode = #{model.cityCode}
+            </if>
+            <if test="model.areaCode != null and model.areaCode !=''">
+                and areaCode = #{model.areaCode}
+            </if>
+        </where>
+        order by createTime desc
+    </select>
+
+    <select id="regfindCount" resultType="Integer" parameterType="UseCommunityPo">
+        SELECT count(1) from  use_community
+        <where>
+            1=1
+            <if test="model.provinceCode != null and model.provinceCode !=''">
+                and provinceCode = #{model.provinceCode}
+            </if>
+            <if test="model.cityCode != null and model.cityCode !=''">
+                and cityCode = #{model.cityCode}
+            </if>
+            <if test="model.areaCode != null and model.areaCode !=''">
+                and areaCode = #{model.areaCode}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="findAll" resultType="UseCommunityVo" parameterType="String">
+        select c.*,u.userName as userName,u.loginName as loginName,u.state as userStatus,u1.userName as userWorkName,u1.state as userWorkStatus from use_community c
+        left join sys_user u on u.id = c.sysUserId
+        left join   sys_user u1 on u1.id =c.sysWorkId
+        inner join  use_community_user  ucu
+        <where>
+            c.id = ucu.communityId and ucu.userId=#{userId} and c.state='10'
+            <if test="criteria != null and criteria !=''">
+                <bind name="pun" value="'%'+_parameter.criteria+'%'"/>
+                and (c.communityName like #{pun} or c.communityNo like #{pun} or u.userName like #{pun})
+            </if>
+            <if test="userId != null and userId !=''">
+                and ucu.userId = #{userId}
+            </if>
+
+        </where>
+        order by c.createTime desc
+    </select>
+
+
+    <select id="findCount" resultType="long" parameterType="String">
+        select count(1) from use_community c left join sys_user u on u.id = c.sysUserId  left join   sys_user u1 on u1.id =c.sysWorkId inner join  use_community_user  ucu
+
+        <where>
+            c.id = ucu.communityId and ucu.userId=#{userId} and c.state='10'
+            <if test="criteria != null and criteria !=''">
+                <bind name="pun" value="'%'+_parameter.criteria+'%'"/>
+                and (c.communityName like #{pun} or c.communityNo like #{pun} or u.userName like #{pun})
+            </if>
+            <if test="userId != null and userId !=''">
+                and ucu.userId = #{userId}
+            </if>
+
+        </where>
+    </select>
+
+
+
+
+
+</mapper>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qzi.cms.server.mapper.UseResidentImageMapper">
+    <!-- 获取人脸信息 -->
+    <!--<select id="findImage" resultType="UseResidentImagePo" parameterType="String">-->
+        <!--select * from use_resident_image-->
+        <!--<where>-->
+            <!--1=1-->
+            <!--<if test="equipmentId != null and equipmentId !=''">-->
+               <!--and  residentId in (select residentId from use_resident_equipment where equipmentId=#{equipmentId})  and unix_timestamp(createTime)*1000>#{timestrap}-->
+            <!--</if>-->
+
+            <!--<if test="communityNo !='' and  equipmentId ==''">-->
+               <!--and  phone in (select mobile from use_resident where communityId =  (select id from use_community  where communityNo=#{communityNo}))-->
+            <!--</if>-->
+            <!--<if test="state != null and state !=''">-->
+                <!--and state=#{state}-->
+            <!--</if>-->
+        <!--</where>-->
+        <!--order by createTime asc-->
+
+    <!--</select>-->
+    <select id="findImage" resultType="UseResidentImageVo" parameterType="String">
+        select r.unitNo,c.communityNo,e.equCode,i.* from use_resident r
+        left join use_community c on c.id = r.communityId
+        left join use_equipment e on e.id = r.equipmentId
+        left join use_resident_image i on r.mobile =  i.phone
+        <where>
+            1=1
+            <if test="equipmentId != null and equipmentId !=''">
+                and r.id in (select residentId from use_resident_equipment where equipmentId=#{equipmentId})
+            </if>
+
+            <if test="communityNo !='' and  equipmentId ==''">
+                and  r.mobile in (select phone from use_resident_image) and  c.communityNo = #{communityNo}
+            </if>
+            <if test="state != null and state !=''">
+                and i.state=#{state}
+            </if>
+        </where>
+        and unix_timestamp(i.createTime)*1000>#{timestrap}
+        and e.equCode is not null and i.imageUrl is not null
+        order by i.createTime asc
+
+    </select>
+
+
+
+</mapper>
